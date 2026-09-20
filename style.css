@@ -16,7 +16,31 @@ body { margin:0; min-width:320px; min-height:100vh; color:#fff; background:#0305
 .overlay { position:absolute; inset:0; z-index:10; display:grid; place-items:center; background:rgba(3,4,18,.68); backdrop-filter:blur(3px); transition:opacity .25s; }.start-screen { text-align:center; padding:70px 20px 30px; }.title-planet { display:grid; place-items:center; width:85px; height:85px; margin:0 auto 20px; border:3px solid var(--magenta); border-radius:50%; color:var(--yellow); font-size:38px; box-shadow:0 0 25px var(--magenta),inset 0 0 20px rgba(255,79,216,.4); animation:float 3s ease-in-out infinite; }.start-screen h1 { margin:18px 0; font:clamp(27px,5vw,54px)/1.35 "Press Start 2P"; color:#fff; text-shadow:4px 4px 0 #61227f,0 0 20px var(--magenta); }.start-screen h1 em { color:var(--yellow); font-style:normal; text-shadow:4px 4px 0 #92583d,0 0 20px var(--yellow); }.intro { color:#d6d9f4; font-size:17px; line-height:1.45; }.primary-button { cursor:pointer; margin-top:18px; padding:17px 25px; border:2px solid var(--yellow); border-radius:8px; color:#11132d; background:var(--yellow); box-shadow:0 0 20px rgba(255,243,92,.6); font:13px "Press Start 2P"; transition:transform .15s,box-shadow .15s; }.primary-button:hover { transform:translateY(-3px) scale(1.02); box-shadow:0 0 32px rgba(255,243,92,.9); }.primary-button span { margin-left:8px; }.tip { margin-top:24px; color:#9ba3d2; font-size:12px; }.modal.hidden { opacity:0; pointer-events:none; }.modal-card { width:min(90%,420px); padding:34px 25px; text-align:center; border:2px solid var(--magenta); border-radius:18px; background:#111333; box-shadow:0 0 35px rgba(255,79,216,.4); }.gameover-icon { font-size:42px; color:var(--red); filter:drop-shadow(0 0 10px var(--red)); }.modal-card h2 { margin:16px 0 8px; font:28px "Press Start 2P"; color:var(--yellow); }.modal-card > p:not(.eyebrow) { color:#c4c9ef; }.result-grid { display:flex; justify-content:center; gap:35px; margin:25px 0 3px; }.result-grid div { min-width:105px; padding:12px; border-radius:9px; background:#1b1f4a; }.result-grid span { display:block; font:8px "Press Start 2P"; color:#a7acd5; }.result-grid strong { display:block; margin-top:10px; font:20px "Press Start 2P"; color:var(--cyan); }
 .freeze-overlay { position:absolute; inset:0; z-index:4; display:none; place-items:center; background:rgba(93,236,255,.13); box-shadow:inset 0 0 70px rgba(89,245,255,.55); }.freeze-overlay.active { display:grid; animation:frost .8s ease-in-out infinite alternate; }.freeze-content { display:grid; place-items:center; padding:22px 35px; border:2px solid var(--cyan); border-radius:18px; background:rgba(7,16,48,.85); box-shadow:0 0 30px var(--cyan); }.freeze-content span { font-size:30px; }.freeze-content strong { margin:7px 0; font:23px "Press Start 2P"; color:var(--cyan); text-shadow:0 0 10px var(--cyan); }.freeze-content b { font:35px "Press Start 2P"; color:#fff; }.freeze-content small { margin-top:8px; font:8px "Press Start 2P"; color:#bdeeff; }.pop-text { position:absolute; z-index:6; color:var(--yellow); font:13px "Press Start 2P"; text-shadow:0 0 8px var(--yellow); animation:popText .8s forwards; pointer-events:none; }.spark { position:absolute; width:7px; height:7px; border-radius:50%; background:var(--cyan); box-shadow:0 0 10px currentColor; animation:spark .55s ease-out forwards; }
 @keyframes drift { to { transform:translateY(50px); } } @keyframes float { 50% { transform:translateY(-12px) rotate(5deg); } } @keyframes bonusPulse { to { transform:scale(1.06); filter:brightness(1.35); } } @keyframes frost { to { background:rgba(93,236,255,.24); } } @keyframes popText { to { transform:translateY(-55px) scale(1.25); opacity:0; } } @keyframes spark { to { transform:translate(var(--x),var(--y)) scale(0); opacity:0; } }
-@media (max-width:550px) { .hud { height:93px; padding:18px; }.brand { font-size:8px; }.brand-mark { font-size:14px; }.stat span { font-size:6px; }.stat strong { font-size:13px; }.game-area { height:calc(100vh - 238px); }.mission-copy { top:14px; }.mission-copy .eyebrow { font-size:6px; }.mission-copy p { font-size:11px; }.control-panel { height:145px; padding-inline:18px; }.start-screen h1 { font-size:25px; }.start-screen { padding-top:55px; }.operation { border-radius:9px; } }
+/* Keep the playfield between the HUD and answer panel on phones. */
+@media (max-width:550px) {
+  body { min-height:100svh; min-height:100dvh; }
+  .game-shell {
+    display:grid;
+    grid-template-rows:93px minmax(0,1fr) 145px;
+    height:100svh;
+    min-height:100svh;
+    height:100dvh;
+    min-height:100dvh;
+  }
+  .hud { height:93px; padding:18px; }
+  .brand { font-size:8px; }
+  .brand-mark { font-size:14px; }
+  .stat span { font-size:6px; }
+  .stat strong { font-size:13px; }
+  .game-area { height:auto; min-height:0; }
+  .mission-copy { top:14px; }
+  .mission-copy .eyebrow { font-size:6px; }
+  .mission-copy p { font-size:11px; }
+  .control-panel { height:145px; padding-inline:18px; }
+  .start-screen h1 { font-size:25px; }
+  .start-screen { padding-top:55px; }
+  .operation { border-radius:9px; }
+}
 
 /* Scoreboard shown at the end of each mission. */
 .modal-card { max-height:calc(100vh - 30px); overflow:auto; padding-top:28px; padding-bottom:28px; }
