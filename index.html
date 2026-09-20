@@ -50,7 +50,7 @@
         <div class="title-planet" aria-hidden="true">✦</div>
         <p class="eyebrow">JEU D'ARCADE MATHÉMATIQUE</p>
         <h1>OPÉRATION<br /><em>SAUVETAGE</em><br />MATH</h1>
-        <p class="intro">Les calculs tombent du ciel.<br />À toi de sauver la galaxie !</p>
+        <p class="intro">Les calculs tombent du ciel.<br />À toi de sauver la galaxie !<br /><strong>Les multiplications arrivent avec les niveaux.</strong></p>
         <button id="start-button" class="primary-button">JOUER <span>▶</span></button>
         <p class="tip">Astuce : une réponse rapide rapporte plus de points.</p>
       </div>
@@ -62,6 +62,17 @@
           <h2 id="gameover-title">OH NON !</h2>
           <p>Un calcul a atteint la zone danger.</p>
           <div class="result-grid"><div><span>SCORE</span><strong id="final-score">0</strong></div><div><span>RECORD</span><strong id="high-score">0</strong></div></div>
+          <form id="score-form" class="score-form hidden">
+            <label for="player-name">NOUVEAU MEILLEUR SCORE ! ENTRE TON NOM</label>
+            <div class="score-entry">
+              <input id="player-name" maxlength="12" autocomplete="name" placeholder="TON NOM" aria-label="Votre nom" />
+              <button type="submit">AJOUTER</button>
+            </div>
+          </form>
+          <section class="leaderboard" aria-labelledby="leaderboard-title">
+            <h3 id="leaderboard-title">MEILLEURS SCORES</h3>
+            <ol id="leaderboard-list"></ol>
+          </section>
           <button id="restart-button" class="primary-button">REJOUER <span>↻</span></button>
         </div>
       </div>
