@@ -8,7 +8,14 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="style.css" />
+    <style>
+      /* CSS critique pour éviter le FOUC (Flash Of Unstyled Content) */
+      html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#030514;color:#fff;font-family:"Space Grotesk",sans-serif}
+      .game-layout{position:relative;height:100vh;overflow:hidden;background:radial-gradient(circle at 50% 35%,#1c2461 0%,#090c2d 33%,#040515 73%)}
+      .hud{position:absolute;top:0;left:0;right:0;height:50px;z-index:10}
+      #game-area{position:absolute;left:0;right:0;top:50px;bottom:60px;overflow:hidden}
+      .control-panel{position:absolute;bottom:0;left:0;right:0;height:60px;z-index:10}
+    </style>
   </head>
   <body>
     <div class="game-layout">
@@ -58,7 +65,10 @@
         <p class="eyebrow">MISSION TERMINÉE</p>
         <h2 id="gameover-title">OH NON !</h2>
         <p>Un calcul a atteint la zone danger.</p>
-        <div class="result-grid"><div><span>SCORE</span><strong id="final-score">0</strong></div><div><span>RECORD</span><strong id="high-score">0</strong></div></div>
+        <div class="result-grid">
+          <div><span>SCORE</span><strong id="final-score">0</strong></div>
+          <div><span>RECORD</span><strong id="high-score">0</strong></div>
+        </div>
         <form id="score-form" class="score-form hidden">
           <label for="player-name">NOUVEAU MEILLEUR SCORE ! ENTRE TON NOM</label>
           <div class="score-entry">
@@ -73,6 +83,7 @@
         <button id="restart-button" class="primary-button">REJOUER <span>↻</span></button>
       </div>
     </div>
+    <link rel="stylesheet" href="style.css" />
     <script src="script.js"></script>
   </body>
 </html>
