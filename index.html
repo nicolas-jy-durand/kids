@@ -2,19 +2,20 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#07091f" />
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-    <meta http-equiv="Pragma" content="no-cache" />
-    <meta http-equiv="Expires" content="0" />
     <title>Opération Sauvetage Math</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="style.css?v=202410172236" />
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <div class="game-layout">
+    <main class="game-shell" aria-label="Jeu Opération Sauvetage Math">
+      <div class="stars" aria-hidden="true"></div>
+      <div class="aurora aurora-one" aria-hidden="true"></div>
+      <div class="aurora aurora-two" aria-hidden="true"></div>
+
       <header class="hud">
         <div class="brand"><span class="brand-mark">✧</span> OPÉRATION<br />SAUVETAGE MATH</div>
         <div class="hud-stats">
@@ -23,7 +24,7 @@
         </div>
       </header>
 
-      <section id="game-area" class="game-area">
+      <section id="game-area" class="game-area" aria-live="polite">
         <div class="mission-copy">
           <span class="eyebrow">MISSION : SECOURS NUMÉRIQUE</span>
           <p>Résous les calculs avant qu'ils atteignent la zone rouge.</p>
@@ -44,42 +45,38 @@
         </div>
         <p id="status-message" class="status-message">Appuie sur jouer pour lancer la mission.</p>
       </section>
-    </div>
 
-    <div id="start-screen" class="overlay start-screen">
-      <div class="title-planet" aria-hidden="true">✧</div>
-      <p class="eyebrow">JEU D'ARCADE MATHÉMATIQUE</p>
-      <h1>OPÉRATION<br /><em>SAUVETAGE</em><br />MATH</h1>
-      <p class="intro">Les calculs tombent du ciel.<br />À toi de sauver la galaxie !<br /><strong>Les multiplications arrivent avec les niveaux.</strong></p>
-      <button id="start-button" class="primary-button">JOUER <span>▶</span></button>
-      <p class="tip">Astuce : une réponse rapide rapporte plus de points.</p>
-    </div>
-
-    <div id="gameover-modal" class="overlay modal hidden" role="dialog" aria-modal="true" aria-labelledby="gameover-title">
-      <div class="modal-card">
-        <div class="gameover-icon">☂</div>
-        <p class="eyebrow">MISSION TERMINÉE</p>
-        <h2 id="gameover-title">OH NON !</h2>
-        <p>Un calcul a atteint la zone danger.</p>
-        <div class="result-grid">
-          <div><span>SCORE</span><strong id="final-score">0</strong></div>
-          <div><span>RECORD</span><strong id="high-score">0</strong></div>
-        </div>
-        <form id="score-form" class="score-form hidden">
-          <label for="player-name">NOUVEAU MEILLEUR SCORE ! ENTRE TON NOM</label>
-          <div class="score-entry">
-            <input id="player-name" maxlength="12" autocomplete="name" placeholder="TON NOM" aria-label="Votre nom" />
-            <button type="submit">AJOUTER</button>
-          </div>
-        </form>
-        <section class="leaderboard" aria-labelledby="leaderboard-title">
-          <h3 id="leaderboard-title">MEILLEURS SCORES</h3>
-          <ol id="leaderboard-list"></ol>
-        </section>
-        <button id="restart-button" class="primary-button">REJOUER <span>↻</span></button>
+      <div id="start-screen" class="overlay start-screen">
+        <div class="title-planet" aria-hidden="true">✧</div>
+        <p class="eyebrow">JEU D'ARCADE MATHÉMATIQUE</p>
+        <h1>OPÉRATION<br /><em>SAUVETAGE</em><br />MATH</h1>
+        <p class="intro">Les calculs tombent du ciel.<br />À toi de sauver la galaxie !<br /><strong>Les multiplications arrivent avec les niveaux.</strong></p>
+        <button id="start-button" class="primary-button">JOUER <span>▶</span></button>
+        <p class="tip">Astuce : une réponse rapide rapporte plus de points.</p>
       </div>
-    </div>
-    <link rel="stylesheet" href="style.css?v=202410172236" />
-    <script src="script.js?v=202410172236"></script>
+
+      <div id="gameover-modal" class="overlay modal hidden" role="dialog" aria-modal="true" aria-labelledby="gameover-title">
+        <div class="modal-card">
+          <div class="gameover-icon">☂</div>
+          <p class="eyebrow">MISSION TERMINÉE</p>
+          <h2 id="gameover-title">OH NON !</h2>
+          <p>Un calcul a atteint la zone danger.</p>
+          <div class="result-grid"><div><span>SCORE</span><strong id="final-score">0</strong></div><div><span>RECORD</span><strong id="high-score">0</strong></div></div>
+          <form id="score-form" class="score-form hidden">
+            <label for="player-name">NOUVEAU MEILLEUR SCORE ! ENTRE TON NOM</label>
+            <div class="score-entry">
+              <input id="player-name" maxlength="12" autocomplete="name" placeholder="TON NOM" aria-label="Votre nom" />
+              <button type="submit">AJOUTER</button>
+            </div>
+          </form>
+          <section class="leaderboard" aria-labelledby="leaderboard-title">
+            <h3 id="leaderboard-title">MEILLEURS SCORES</h3>
+            <ol id="leaderboard-list"></ol>
+          </section>
+          <button id="restart-button" class="primary-button">REJOUER <span>↻</span></button>
+        </div>
+      </div>
+    </main>
+    <script src="script.js"></script>
   </body>
 </html>
