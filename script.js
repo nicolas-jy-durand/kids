@@ -126,7 +126,7 @@ function checkAnswer() {
 }
 
 function gameOver() {
-  if (!game?.running) return; game.running = false; clearInterval(game.freezeTimer); freezeOverlay.classList.remove('active'); answer.disabled = true; tone(180, .55, 'sawtooth', -120);
+  if (!game?.running) return; game.running = false; clearInterval(game.freezeTimer); freezeOverlay.classList.remove('active'); answer.disabled = true; document.querySelector('#enter-button').disabled = true; tone(180, .55, 'sawtooth', -120);
   const entries = getLeaderboard(); const high = Math.max(entries[0]?.score || 0, game.score);
   document.querySelector('#final-score').textContent = game.score; document.querySelector('#high-score').textContent = high;
   scoreForm.classList.toggle('hidden', !qualifiesForLeaderboard(game.score, entries)); playerName.value = '';
@@ -146,7 +146,7 @@ function tick(time) {
 
 function startGame() {
   game?.operations?.forEach(op => op.element.remove()); clearInterval(game?.freezeTimer); game = { running:true, score:0, level:1, solved:0, operations:[], frozen:false, nextSpawn:performance.now() + 1000, lastTime:performance.now() };
-  scoreText(0); levelEl.textContent = '01'; answer.disabled = false; answer.value = ''; startScreen.style.display = 'none'; gameOverModal.classList.add('hidden'); setStatus('Repère le calcul et tape sa réponse !'); spawnOperation(); answer.focus(); requestAnimationFrame(tick);
+  scoreText(0); levelEl.textContent = '01'; answer.disabled = false; document.querySelector('#enter-button').disabled = false; answer.value = ''; startScreen.style.display = 'none'; gameOverModal.classList.add('hidden'); setStatus('Repère le calcul et tape sa réponse !'); spawnOperation(); answer.focus(); requestAnimationFrame(tick);
 }
 
 document.querySelector('#start-button').addEventListener('click', startGame); document.querySelector('#restart-button').addEventListener('click', startGame);
@@ -158,5 +158,8 @@ scoreForm.addEventListener('submit', event => {
     .sort((a, b) => b.score - a.score || a.createdAt - b.createdAt).slice(0, LEADERBOARD_SIZE);
   saveLeaderboard(entries); renderLeaderboard(entries); scoreForm.classList.add('hidden');
 });
+answer.addEventListener('keydown', event => { if (event.key === 'Enter') checkAnswer(); });
+document.querySelector('#enter-button').addEventListener('click', checkAnswer);
+document.addEventListener('visibilitychange', () => { if (!document.hidden && game?.running) answer.focus(); });
 answer.addEventListener('keydown', event => { if (event.key === 'Enter') checkAnswer(); });
 document.addEventListener('visibilitychange', () => { if (!document.hidden && game?.running) answer.focus(); });
