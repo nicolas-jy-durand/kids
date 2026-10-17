@@ -10,12 +10,98 @@ const freezeCount = document.querySelector('#freeze-count');
 const scoreForm = document.querySelector('#score-form');
 const playerName = document.querySelector('#player-name');
 const leaderboardList = document.querySelector('#leaderboard-list');
+const gameShell = document.querySelector('.game-shell');
 
 const LEADERBOARD_KEY = 'sauvetage-math-leaderboard';
 const LEADERBOARD_SIZE = 5;
 
 let game = null;
 let audioCtx;
+
+// ===== GESTION DU CLAVIER VIRTUEL (FIX POUR FIREFOX ANDROID) =====
+function initMobileKeyboardFix() {
+  // Détecte si c'est un mobile
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+  if (!isMobile) return;
+
+  // Force le body et html à 100%
+  document.documentElement.style.height = '100%';
+  document.body.style.height = '100%';
+  document.body.style.overflow = 'hidden';
+
+  // Rendre game-shell en position:fixed
+  gameShell.style.position = 'fixed';
+  gameShell.style.top = '0';
+  gameShell.style.left = '0';
+  gameShell.style.right = '0';
+  gameShell.style.bottom = '0';
+  gameShell.style.height = '100%';
+
+  // Détection du clavier via le focus de l'input
+  const answerInput = document.querySelector('#answer');
+  let keyboardOpen = false;
+
+  answerInput.addEventListener('focus', () => {
+    keyboardOpen = true;
+    // Attendre que le clavier soit complètement ouvert
+    setTimeout(() => {
+      // Recalculer la hauteur de la zone de jeu
+      resizeGameForKeyboard();
+      // Faire défiler vers le haut pour montrer le jeu
+      window.scrollTo(0, 0);
+    }, 300);
+  });
+
+  answerInput.addEventListener('blur', () => {
+    keyboardOpen = false;
+    // Réinitialiser les hauteurs
+    gameShell.style.height = '100%';
+    if (game?.running) {
+      answer.focus();
+    }
+  });
+
+  // Fonction de redimensionnement
+  function resizeGameForKeyboard() {
+    const windowHeight = window.innerHeight;
+    const hudHeight = document.querySelector('.hud').offsetHeight;
+    const controlPanelHeight = document.querySelector('.control-panel').offsetHeight;
+
+    // Calculer la hauteur disponible pour la zone de jeu
+    const availableHeight = windowHeight - hudHeight - controlPanelHeight;
+
+    // Appliquer les hauteurs
+    gameShell.style.height = `${windowHeight}px`;
+    document.querySelector('#game-area').style.height = `${availableHeight}px`;
+
+    // Repositionner la ligne de danger
+    const dangerLine = document.querySelector('.danger-line');
+    if (dangerLine) {
+      dangerLine.style.bottom = `${controlPanelHeight + 5}px`;
+    }
+
+    // Recalculer les positions des opérations existantes
+    if (game?.operations) {
+      game.operations.forEach(op => {
+        op.element.style.top = `${op.y}px`;
+      });
+    }
+  }
+
+  // Écouter les changements de taille de fenêtre
+  window.addEventListener('resize', () => {
+    if (keyboardOpen) {
+      resizeGameForKeyboard();
+    }
+  });
+
+  // Initialiser au chargement
+  window.addEventListener('load', resizeGameForKeyboard);
+  setTimeout(resizeGameForKeyboard, 500);
+}
+
+// ===== FIN GESTION CLAVIER =====
 
 function tone(freq, duration, type = 'sine', slide = 0) {
   try {
@@ -107,8 +193,11 @@ function spawnOperation(bonus = false) {
   const element = document.createElement('div');
   element.className = `operation${bonus ? ' bonus' : ''}`;
   element.innerHTML = bonus ? `<small>BONUS VITESSE</small><span>${problem.text}</span>` : problem.text;
+
+  // Calculer la largeur maximale en fonction de la taille actuelle de la zone
   const maxX = Math.max(8, area.clientWidth - (bonus ? 205 : 142) - 12);
   const op = { ...problem, element, x: 7 + Math.random() * maxX, y: 72, speed: 19 + game.level * 4 + Math.random() * 8 };
+
   element.style.left = `${op.x}px`;
   element.style.top = `${op.y}px`;
   area.append(element);
@@ -265,53 +354,7 @@ function startGame() {
   requestAnimationFrame(tick);
 }
 
-// Gestion du clavier virtuel (Android/iOS)
-function setupVirtualKeyboardHandling() {
-  // Force le body à rester à 100vh
-  document.body.style.height = '100vh';
-  document.body.style.overflow = 'hidden';
-
-  // Détection du clavier via visualViewport (iOS/Android moderne)
-  if (window.visualViewport) {
-    window.visualViewport.addEventListener('resize', () => {
-      const gameShell = document.querySelector('.game-shell');
-      if (gameShell) {
-        gameShell.style.height = `${window.visualViewport.height}px`;
-      }
-    });
-  }
-
-  // Solution alternative pour Android (détection du focus sur l'input)
-  const answerInput = document.querySelector('#answer');
-  if (answerInput) {
-    answerInput.addEventListener('focus', () => {
-      setTimeout(() => {
-        const gameShell = document.querySelector('.game-shell');
-        if (gameShell) {
-          gameShell.style.height = `${window.innerHeight}px`;
-        }
-        window.scrollTo(0, 0);
-      }, 300);
-    });
-
-    answerInput.addEventListener('blur', () => {
-      const gameShell = document.querySelector('.game-shell');
-      if (gameShell) {
-        gameShell.style.height = '';
-      }
-    });
-  }
-
-  // Solution de secours : redimensionnement manuel
-  window.addEventListener('resize', () => {
-    const gameShell = document.querySelector('.game-shell');
-    if (gameShell) {
-      gameShell.style.height = `${window.innerHeight}px`;
-    }
-  });
-}
-
-// Écouteurs d'événements
+// ===== ÉCOUTEURS D'ÉVÉNEMENTS =====
 document.querySelector('#start-button').addEventListener('click', startGame);
 document.querySelector('#restart-button').addEventListener('click', startGame);
 scoreForm.addEventListener('submit', event => {
@@ -329,10 +372,9 @@ answer.addEventListener('keydown', event => {
 });
 document.querySelector('#enter-button').addEventListener('click', checkAnswer);
 
-// Initialisation
+// ===== INITIALISATION =====
 window.addEventListener('load', () => {
-  setupVirtualKeyboardHandling();
-  setTimeout(setupVirtualKeyboardHandling, 500);
+  initMobileKeyboardFix();
 });
 document.addEventListener('visibilitychange', () => {
   if (!document.hidden && game?.running) answer.focus();
