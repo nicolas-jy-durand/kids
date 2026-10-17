@@ -149,7 +149,8 @@ function startGame() {
   scoreText(0); levelEl.textContent = '01'; answer.disabled = false; document.querySelector('#enter-button').disabled = false; answer.value = ''; startScreen.style.display = 'none'; gameOverModal.classList.add('hidden'); setStatus('Repère le calcul et tape sa réponse !'); spawnOperation(); answer.focus(); requestAnimationFrame(tick);
 }
 
-document.querySelector('#start-button').addEventListener('click', startGame); document.querySelector('#restart-button').addEventListener('click', startGame);
+document.querySelector('#start-button').addEventListener('click', startGame);
+document.querySelector('#restart-button').addEventListener('click', startGame);
 scoreForm.addEventListener('submit', event => {
   event.preventDefault();
   const name = playerName.value.trim().replace(/\s+/g, ' ').slice(0, 12).toUpperCase();
@@ -160,6 +161,24 @@ scoreForm.addEventListener('submit', event => {
 });
 answer.addEventListener('keydown', event => { if (event.key === 'Enter') checkAnswer(); });
 document.querySelector('#enter-button').addEventListener('click', checkAnswer);
-document.addEventListener('visibilitychange', () => { if (!document.hidden && game?.running) answer.focus(); });
-answer.addEventListener('keydown', event => { if (event.key === 'Enter') checkAnswer(); });
+
+// Gestion du clavier virtuel sur mobile
+function adjustForVirtualKeyboard() {
+  if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+    const visualViewport = window.visualViewport;
+    if (visualViewport) {
+      visualViewport.addEventListener('resize', () => {
+        const keyboardHeight = Math.max(0, window.innerHeight - visualViewport.height);
+        if (keyboardHeight > 100) {
+          document.documentElement.style.setProperty('--keyboard-height', `${keyboardHeight}px`);
+        } else {
+          document.documentElement.style.removeProperty('--keyboard-height');
+        }
+      });
+    }
+  }
+}
+
+// Appel au chargement
+window.addEventListener('load', adjustForVirtualKeyboard);
 document.addEventListener('visibilitychange', () => { if (!document.hidden && game?.running) answer.focus(); });
