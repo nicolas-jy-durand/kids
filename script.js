@@ -1,3 +1,6 @@
+// === ÉLÉMENTS DOM ===
+const gameContainer = document.querySelector('.game-container');
+const gameShell = document.querySelector('.game-shell');
 const area = document.querySelector('#game-area');
 const answer = document.querySelector('#answer');
 const scoreEl = document.querySelector('#score');
@@ -10,78 +13,50 @@ const freezeCount = document.querySelector('#freeze-count');
 const scoreForm = document.querySelector('#score-form');
 const playerName = document.querySelector('#player-name');
 const leaderboardList = document.querySelector('#leaderboard-list');
-const gameShell = document.querySelector('.game-shell');
+const hud = document.querySelector('.hud');
+const controlPanel = document.querySelector('.control-panel');
+const dangerLine = document.querySelector('.danger-line');
 
+// === CONSTANTES ===
 const LEADERBOARD_KEY = 'sauvetage-math-leaderboard';
 const LEADERBOARD_SIZE = 5;
-
 let game = null;
 let audioCtx;
+let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-// ===== GESTION DU CLAVIER VIRTUEL (FIX POUR FIREFOX ANDROID) =====
-function initMobileKeyboardFix() {
-  // Détecte si c'est un mobile
-  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
+// === GESTION DU LAYOUT POUR MOBILE (FIX FIREFOX ANDROID) ===
+function initMobileLayout() {
   if (!isMobile) return;
 
-  // Force le body et html à 100%
-  document.documentElement.style.height = '100%';
-  document.body.style.height = '100%';
-  document.body.style.overflow = 'hidden';
+  // Stocker les hauteurs par défaut
+  const defaultHudHeight = hud.offsetHeight;
+  const defaultControlHeight = controlPanel.offsetHeight;
 
-  // Rendre game-shell en position:fixed
-  gameShell.style.position = 'fixed';
-  gameShell.style.top = '0';
-  gameShell.style.left = '0';
-  gameShell.style.right = '0';
-  gameShell.style.bottom = '0';
-  gameShell.style.height = '100%';
-
-  // Détection du clavier via le focus de l'input
-  const answerInput = document.querySelector('#answer');
-  let keyboardOpen = false;
-
-  answerInput.addEventListener('focus', () => {
-    keyboardOpen = true;
-    // Attendre que le clavier soit complètement ouvert
-    setTimeout(() => {
-      // Recalculer la hauteur de la zone de jeu
-      resizeGameForKeyboard();
-      // Faire défiler vers le haut pour montrer le jeu
-      window.scrollTo(0, 0);
-    }, 300);
-  });
-
-  answerInput.addEventListener('blur', () => {
-    keyboardOpen = false;
-    // Réinitialiser les hauteurs
-    gameShell.style.height = '100%';
-    if (game?.running) {
-      answer.focus();
-    }
-  });
-
-  // Fonction de redimensionnement
-  function resizeGameForKeyboard() {
+  // Fonction pour recalculer les positions
+  function updateLayout() {
     const windowHeight = window.innerHeight;
-    const hudHeight = document.querySelector('.hud').offsetHeight;
-    const controlPanelHeight = document.querySelector('.control-panel').offsetHeight;
+    const hudHeight = hud.offsetHeight || defaultHudHeight;
+    const controlHeight = controlPanel.offsetHeight || defaultControlHeight;
 
-    // Calculer la hauteur disponible pour la zone de jeu
-    const availableHeight = windowHeight - hudHeight - controlPanelHeight;
+    // Fixer les positions
+    hud.style.top = '0';
+    hud.style.height = `${hudHeight}px`;
 
-    // Appliquer les hauteurs
-    gameShell.style.height = `${windowHeight}px`;
-    document.querySelector('#game-area').style.height = `${availableHeight}px`;
+    controlPanel.style.bottom = '0';
+    controlPanel.style.height = `${controlHeight}px`;
+
+    // Calculer la hauteur de la zone de jeu
+    const gameAreaHeight = windowHeight - hudHeight - controlHeight;
+    area.style.top = `${hudHeight}px`;
+    area.style.height = `${gameAreaHeight}px`;
+    area.style.bottom = `${controlHeight}px`;
 
     // Repositionner la ligne de danger
-    const dangerLine = document.querySelector('.danger-line');
     if (dangerLine) {
-      dangerLine.style.bottom = `${controlPanelHeight + 5}px`;
+      dangerLine.style.bottom = `${controlHeight + 5}px`;
     }
 
-    // Recalculer les positions des opérations existantes
+    // Recalculer les opérations existantes
     if (game?.operations) {
       game.operations.forEach(op => {
         op.element.style.top = `${op.y}px`;
@@ -89,20 +64,25 @@ function initMobileKeyboardFix() {
     }
   }
 
-  // Écouter les changements de taille de fenêtre
-  window.addEventListener('resize', () => {
-    if (keyboardOpen) {
-      resizeGameForKeyboard();
-    }
+  // Détecter l'ouverture/fermeture du clavier
+  answer.addEventListener('focus', () => {
+    setTimeout(updateLayout, 300); // Attendre que le clavier soit ouvert
   });
 
-  // Initialiser au chargement
-  window.addEventListener('load', resizeGameForKeyboard);
-  setTimeout(resizeGameForKeyboard, 500);
+  answer.addEventListener('blur', () => {
+    setTimeout(updateLayout, 300); // Attendre que le clavier soit fermé
+  });
+
+  // Écouter les changements de taille
+  window.addEventListener('resize', updateLayout);
+  window.addEventListener('orientationchange', updateLayout);
+
+  // Initialiser
+  updateLayout();
+  setTimeout(updateLayout, 500);
 }
 
-// ===== FIN GESTION CLAVIER =====
-
+// === FONCTIONS DE BASE DU JEU ===
 function tone(freq, duration, type = 'sine', slide = 0) {
   try {
     audioCtx ??= new AudioContext();
@@ -123,6 +103,7 @@ function setStatus(text, kind = '') {
   statusEl.textContent = text;
   statusEl.className = `status-message ${kind}`;
 }
+
 function scoreText(value) {
   scoreEl.textContent = String(value).padStart(4, '0');
 }
@@ -194,9 +175,8 @@ function spawnOperation(bonus = false) {
   element.className = `operation${bonus ? ' bonus' : ''}`;
   element.innerHTML = bonus ? `<small>BONUS VITESSE</small><span>${problem.text}</span>` : problem.text;
 
-  // Calculer la largeur maximale en fonction de la taille actuelle de la zone
-  const maxX = Math.max(8, area.clientWidth - (bonus ? 205 : 142) - 12);
-  const op = { ...problem, element, x: 7 + Math.random() * maxX, y: 72, speed: 19 + game.level * 4 + Math.random() * 8 };
+  const maxX = Math.max(8, area.clientWidth - (bonus ? 160 : 120) - 10);
+  const op = { ...problem, element, x: 7 + Math.random() * maxX, y: 50, speed: 19 + game.level * 4 + Math.random() * 8 };
 
   element.style.left = `${op.x}px`;
   element.style.top = `${op.y}px`;
@@ -221,7 +201,7 @@ function particles(op) {
   const points = document.createElement('div');
   points.className = 'pop-text';
   points.textContent = op.bonus ? 'FREEZE !' : `+${op.points} PTS`;
-  points.style.left = `${op.x + 25}px`;
+  points.style.left = `${op.x + 20}px`;
   points.style.top = `${op.y}px`;
   area.append(points);
   setTimeout(() => points.remove(), 850);
@@ -314,7 +294,7 @@ function tick(time) {
   const dt = Math.min((time - game.lastTime) / 1000, .05);
   game.lastTime = time;
   if (!game.frozen) {
-    const dangerY = area.clientHeight - 35;
+    const dangerY = area.clientHeight - 25;
     for (const op of [...game.operations]) {
       op.y += op.speed * dt;
       op.element.style.top = `${op.y}px`;
@@ -348,13 +328,13 @@ function startGame() {
   answer.value = '';
   startScreen.style.display = 'none';
   gameOverModal.classList.add('hidden');
-  setStatus('Repère le calcul et tape sa réponse !');
+  setStatus('Repère le calcul et tape ta réponse !');
   spawnOperation();
   answer.focus();
   requestAnimationFrame(tick);
 }
 
-// ===== ÉCOUTEURS D'ÉVÉNEMENTS =====
+// === ÉCOUTEURS D'ÉVÉNEMENTS ===
 document.querySelector('#start-button').addEventListener('click', startGame);
 document.querySelector('#restart-button').addEventListener('click', startGame);
 scoreForm.addEventListener('submit', event => {
@@ -372,9 +352,9 @@ answer.addEventListener('keydown', event => {
 });
 document.querySelector('#enter-button').addEventListener('click', checkAnswer);
 
-// ===== INITIALISATION =====
+// === INITIALISATION ===
 window.addEventListener('load', () => {
-  initMobileKeyboardFix();
+  initMobileLayout();
 });
 document.addEventListener('visibilitychange', () => {
   if (!document.hidden && game?.running) answer.focus();
