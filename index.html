@@ -4,18 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <meta name="theme-color" content="#07091f" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
     <title>Opération Sauvetage Math</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
-    <style>
-      /* CSS critique pour éviter le FOUC (Flash Of Unstyled Content) */
-      html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#030514;color:#fff;font-family:"Space Grotesk",sans-serif}
-      .game-layout{position:relative;height:100vh;overflow:hidden;background:radial-gradient(circle at 50% 35%,#1c2461 0%,#090c2d 33%,#040515 73%)}
-      .hud{position:absolute;top:0;left:0;right:0;height:50px;z-index:10}
-      #game-area{position:absolute;left:0;right:0;top:50px;bottom:60px;overflow:hidden}
-      .control-panel{position:absolute;bottom:0;left:0;right:0;height:60px;z-index:10}
-    </style>
+    <link rel="stylesheet" href="style.css?v=202410172236" />
   </head>
   <body>
     <div class="game-layout">
@@ -83,7 +79,7 @@
         <button id="restart-button" class="primary-button">REJOUER <span>↻</span></button>
       </div>
     </div>
-    <link rel="stylesheet" href="style.css" />
-    <script src="script.js"></script>
+    <link rel="stylesheet" href="style.css?v=202410172236" />
+    <script src="script.js?v=202410172236"></script>
   </body>
 </html>
