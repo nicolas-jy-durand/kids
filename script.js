@@ -1,7 +1,8 @@
 // === ÉLÉMENTS DOM ===
-const gameContainer = document.querySelector('.game-container');
-const gameShell = document.querySelector('.game-shell');
-const area = document.querySelector('#game-area');
+const layout = document.querySelector('.game-layout');
+const hud = document.querySelector('.hud');
+const gameArea = document.querySelector('#game-area');
+const controlPanel = document.querySelector('.control-panel');
 const answer = document.querySelector('#answer');
 const scoreEl = document.querySelector('#score');
 const levelEl = document.querySelector('#level');
@@ -13,8 +14,6 @@ const freezeCount = document.querySelector('#freeze-count');
 const scoreForm = document.querySelector('#score-form');
 const playerName = document.querySelector('#player-name');
 const leaderboardList = document.querySelector('#leaderboard-list');
-const hud = document.querySelector('.hud');
-const controlPanel = document.querySelector('.control-panel');
 const dangerLine = document.querySelector('.danger-line');
 
 // === CONSTANTES ===
@@ -24,65 +23,59 @@ let game = null;
 let audioCtx;
 let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-// === GESTION DU LAYOUT POUR MOBILE (FIX FIREFOX ANDROID) ===
-function initMobileLayout() {
-  if (!isMobile) return;
+// === GESTION DU LAYOUT POUR FIREFOX ANDROID ===
+function updateLayout() {
+  if (!layout || !hud || !gameArea || !controlPanel) return;
 
-  // Stocker les hauteurs par défaut
-  const defaultHudHeight = hud.offsetHeight;
-  const defaultControlHeight = controlPanel.offsetHeight;
+  const windowHeight = window.innerHeight;
+  const hudHeight = hud.offsetHeight;
+  const controlHeight = controlPanel.offsetHeight;
 
-  // Fonction pour recalculer les positions
-  function updateLayout() {
-    const windowHeight = window.innerHeight;
-    const hudHeight = hud.offsetHeight || defaultHudHeight;
-    const controlHeight = controlPanel.offsetHeight || defaultControlHeight;
+  // Définir les positions
+  layout.style.height = `${windowHeight}px`;
+  hud.style.top = '0';
+  gameArea.style.top = `${hudHeight}px`;
+  gameArea.style.height = `${windowHeight - hudHeight - controlHeight}px`;
+  controlPanel.style.top = `${windowHeight - controlHeight}px`;
 
-    // Fixer les positions
-    hud.style.top = '0';
-    hud.style.height = `${hudHeight}px`;
-
-    controlPanel.style.bottom = '0';
-    controlPanel.style.height = `${controlHeight}px`;
-
-    // Calculer la hauteur de la zone de jeu
-    const gameAreaHeight = windowHeight - hudHeight - controlHeight;
-    area.style.top = `${hudHeight}px`;
-    area.style.height = `${gameAreaHeight}px`;
-    area.style.bottom = `${controlHeight}px`;
-
-    // Repositionner la ligne de danger
-    if (dangerLine) {
-      dangerLine.style.bottom = `${controlHeight + 5}px`;
-    }
-
-    // Recalculer les opérations existantes
-    if (game?.operations) {
-      game.operations.forEach(op => {
-        op.element.style.top = `${op.y}px`;
-      });
-    }
+  // Repositionner la ligne de danger
+  if (dangerLine) {
+    dangerLine.style.bottom = `${controlHeight + 5}px`;
   }
 
-  // Détecter l'ouverture/fermeture du clavier
-  answer.addEventListener('focus', () => {
-    setTimeout(updateLayout, 300); // Attendre que le clavier soit ouvert
-  });
-
-  answer.addEventListener('blur', () => {
-    setTimeout(updateLayout, 300); // Attendre que le clavier soit fermé
-  });
-
-  // Écouter les changements de taille
-  window.addEventListener('resize', updateLayout);
-  window.addEventListener('orientationchange', updateLayout);
-
-  // Initialiser
-  updateLayout();
-  setTimeout(updateLayout, 500);
+  // Recalculer les opérations existantes
+  if (game?.operations) {
+    game.operations.forEach(op => {
+      op.element.style.top = `${op.y}px`;
+    });
+  }
 }
 
-// === FONCTIONS DE BASE DU JEU ===
+// Écouter les changements
+function initLayout() {
+  // Initialiser au chargement
+  updateLayout();
+
+  // Écouter le redimensionnement
+  window.addEventListener('resize', updateLayout);
+
+  // Écouter le focus/blur de l'input (pour le clavier)
+  if (answer) {
+    answer.addEventListener('focus', () => {
+      setTimeout(updateLayout, 300); // Attendre que le clavier soit ouvert
+    });
+    answer.addEventListener('blur', () => {
+      setTimeout(updateLayout, 300); // Attendre que le clavier soit fermé
+    });
+  }
+
+  // Écouter visualViewport (pour iOS/Android moderne)
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', updateLayout);
+  }
+}
+
+// === FONCTIONS DE BASE DU JEU (inchangées) ===
 function tone(freq, duration, type = 'sine', slide = 0) {
   try {
     audioCtx ??= new AudioContext();
@@ -175,18 +168,18 @@ function spawnOperation(bonus = false) {
   element.className = `operation${bonus ? ' bonus' : ''}`;
   element.innerHTML = bonus ? `<small>BONUS VITESSE</small><span>${problem.text}</span>` : problem.text;
 
-  const maxX = Math.max(8, area.clientWidth - (bonus ? 160 : 120) - 10);
+  const maxX = Math.max(8, gameArea.clientWidth - (bonus ? 160 : 120) - 10);
   const op = { ...problem, element, x: 7 + Math.random() * maxX, y: 50, speed: 19 + game.level * 4 + Math.random() * 8 };
 
   element.style.left = `${op.x}px`;
   element.style.top = `${op.y}px`;
-  area.append(element);
+  gameArea.append(element);
   game.operations.push(op);
 }
 
 function particles(op) {
   const rect = op.element.getBoundingClientRect();
-  const parent = area.getBoundingClientRect();
+  const parent = gameArea.getBoundingClientRect();
   for (let i = 0; i < 16; i++) {
     const spark = document.createElement('i');
     spark.className = 'spark';
@@ -203,7 +196,7 @@ function particles(op) {
   points.textContent = op.bonus ? 'FREEZE !' : `+${op.points} PTS`;
   points.style.left = `${op.x + 20}px`;
   points.style.top = `${op.y}px`;
-  area.append(points);
+  gameArea.append(points);
   setTimeout(() => points.remove(), 850);
 }
 
@@ -219,7 +212,7 @@ function solve(op) {
     return;
   }
   game.solved++;
-  const heightBonus = Math.max(0, Math.round((area.clientHeight - op.y) / area.clientHeight * 55));
+  const heightBonus = Math.max(0, Math.round((gameArea.clientHeight - op.y) / gameArea.clientHeight * 55));
   op.points = 100 + heightBonus;
   op.element.classList.add('exploding');
   particles(op);
@@ -294,7 +287,7 @@ function tick(time) {
   const dt = Math.min((time - game.lastTime) / 1000, .05);
   game.lastTime = time;
   if (!game.frozen) {
-    const dangerY = area.clientHeight - 25;
+    const dangerY = gameArea.clientHeight - 25;
     for (const op of [...game.operations]) {
       op.y += op.speed * dt;
       op.element.style.top = `${op.y}px`;
@@ -354,7 +347,8 @@ document.querySelector('#enter-button').addEventListener('click', checkAnswer);
 
 // === INITIALISATION ===
 window.addEventListener('load', () => {
-  initMobileLayout();
+  initLayout();
+  setTimeout(initLayout, 500);
 });
 document.addEventListener('visibilitychange', () => {
   if (!document.hidden && game?.running) answer.focus();
