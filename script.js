@@ -22,28 +22,32 @@ const LEADERBOARD_SIZE = 5;
 let game = null;
 let audioCtx;
 let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+let keyboardOpen = false;
 
-// === GESTION DU LAYOUT POUR FIREFOX ANDROID ===
-function updateLayout() {
-  if (!layout || !hud || !gameArea || !controlPanel) return;
+// === GESTION DU CLAVIER (SOLUTION ULTIME) ===
+function adjustForKeyboard() {
+  if (!isMobile) return;
 
   const windowHeight = window.innerHeight;
   const hudHeight = hud.offsetHeight;
   const controlHeight = controlPanel.offsetHeight;
 
-  // Définir les positions
-  layout.style.height = `${windowHeight}px`;
-  hud.style.top = '0';
-  gameArea.style.top = `${hudHeight}px`;
-  gameArea.style.height = `${windowHeight - hudHeight - controlHeight}px`;
-  controlPanel.style.top = `${windowHeight - controlHeight}px`;
-
-  // Repositionner la ligne de danger
-  if (dangerLine) {
+  // Si le clavier est ouvert, on ajuste la zone de jeu
+  if (keyboardOpen) {
+    // La zone de jeu doit s'arrêter juste au-dessus du panneau de contrôle
+    gameArea.style.bottom = `${controlHeight + 5}px`;
     dangerLine.style.bottom = `${controlHeight + 5}px`;
+  } else {
+    // Sinon, on laisse 10px de marge en bas
+    gameArea.style.bottom = '60px';
+    dangerLine.style.bottom = '5px';
   }
 
-  // Recalculer les opérations existantes
+  // Recalculer la hauteur de la zone de jeu
+  const gameAreaHeight = windowHeight - hudHeight - (keyboardOpen ? controlHeight + 5 : 60);
+  gameArea.style.height = `${gameAreaHeight}px`;
+
+  // Repositionner les opérations existantes
   if (game?.operations) {
     game.operations.forEach(op => {
       op.element.style.top = `${op.y}px`;
@@ -51,28 +55,25 @@ function updateLayout() {
   }
 }
 
-// Écouter les changements
-function initLayout() {
-  // Initialiser au chargement
-  updateLayout();
+function initKeyboardHandling() {
+  if (!isMobile) return;
 
-  // Écouter le redimensionnement
-  window.addEventListener('resize', updateLayout);
+  // Détecter l'ouverture du clavier
+  answer.addEventListener('focus', () => {
+    keyboardOpen = true;
+    setTimeout(adjustForKeyboard, 300); // Attendre que le clavier soit complètement ouvert
+  });
 
-  // Écouter le focus/blur de l'input (pour le clavier)
-  if (answer) {
-    answer.addEventListener('focus', () => {
-      setTimeout(updateLayout, 300); // Attendre que le clavier soit ouvert
-    });
-    answer.addEventListener('blur', () => {
-      setTimeout(updateLayout, 300); // Attendre que le clavier soit fermé
-    });
-  }
+  answer.addEventListener('blur', () => {
+    keyboardOpen = false;
+    setTimeout(adjustForKeyboard, 300); // Attendre que le clavier soit complètement fermé
+  });
 
-  // Écouter visualViewport (pour iOS/Android moderne)
-  if (window.visualViewport) {
-    window.visualViewport.addEventListener('resize', updateLayout);
-  }
+  // Écouter les changements de taille de fenêtre
+  window.addEventListener('resize', adjustForKeyboard);
+
+  // Initialiser
+  adjustForKeyboard();
 }
 
 // === FONCTIONS DE BASE DU JEU (inchangées) ===
@@ -327,7 +328,7 @@ function startGame() {
   requestAnimationFrame(tick);
 }
 
-// === ÉCOUTEURS D'ÉVÉNEMENTS ===
+// === ÉCOUTEURS ===
 document.querySelector('#start-button').addEventListener('click', startGame);
 document.querySelector('#restart-button').addEventListener('click', startGame);
 scoreForm.addEventListener('submit', event => {
@@ -345,10 +346,10 @@ answer.addEventListener('keydown', event => {
 });
 document.querySelector('#enter-button').addEventListener('click', checkAnswer);
 
-// === INITIALISATION ===
+// === INIT ===
 window.addEventListener('load', () => {
-  initLayout();
-  setTimeout(initLayout, 500);
+  initKeyboardHandling();
+  setTimeout(initKeyboardHandling, 500);
 });
 document.addEventListener('visibilitychange', () => {
   if (!document.hidden && game?.running) answer.focus();
