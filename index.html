@@ -17,7 +17,7 @@
       <div class="aurora aurora-two" aria-hidden="true"></div>
 
       <header class="hud">
-        <div class="brand"><span class="brand-mark">✦</span> OPÉRATION<br />SAUVETAGE MATH</div>
+        <div class="brand"><span class="brand-mark">✧</span> OPÉRATION<br />SAUVETAGE MATH</div>
         <div class="hud-stats">
           <div class="stat"><span>SCORE</span><strong id="score">0000</strong></div>
           <div class="stat level-stat"><span>NIVEAU</span><strong id="level">01</strong></div>
@@ -41,13 +41,13 @@
         <div class="answer-row">
           <span class="prompt">&gt;</span>
           <input id="answer" inputmode="numeric" autocomplete="off" maxlength="3" placeholder="Tape ta réponse..." aria-label="Votre réponse" disabled />
-          <kbd>ENTRÉE</kbd>
+          <button id="enter-button" class="enter-button" aria-label="Valider la réponse">ENTRÉE</button>
         </div>
         <p id="status-message" class="status-message">Appuie sur jouer pour lancer la mission.</p>
       </section>
 
       <div id="start-screen" class="overlay start-screen">
-        <div class="title-planet" aria-hidden="true">✦</div>
+        <div class="title-planet" aria-hidden="true">✧</div>
         <p class="eyebrow">JEU D'ARCADE MATHÉMATIQUE</p>
         <h1>OPÉRATION<br /><em>SAUVETAGE</em><br />MATH</h1>
         <p class="intro">Les calculs tombent du ciel.<br />À toi de sauver la galaxie !<br /><strong>Les multiplications arrivent avec les niveaux.</strong></p>
@@ -57,7 +57,7 @@
 
       <div id="gameover-modal" class="overlay modal hidden" role="dialog" aria-modal="true" aria-labelledby="gameover-title">
         <div class="modal-card">
-          <div class="gameover-icon">☄</div>
+          <div class="gameover-icon">☂</div>
           <p class="eyebrow">MISSION TERMINÉE</p>
           <h2 id="gameover-title">OH NON !</h2>
           <p>Un calcul a atteint la zone danger.</p>
