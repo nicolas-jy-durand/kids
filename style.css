@@ -6,9 +6,8 @@
   --panel: #121432;
   --red: #ff4d6d;
 }
-* {
-  box-sizing: border-box;
-}
+
+/* Base */
 html, body {
   margin: 0;
   padding: 0;
@@ -29,14 +28,13 @@ html, body {
   background: radial-gradient(circle at 50% 35%, #1c2461 0%, #090c2d 33%, #040515 73%);
 }
 
-/* HUD - en haut */
+/* HUD - Fixé en haut */
 .hud {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  height: auto;
-  min-height: 50px;
+  height: 50px;
   padding: 8px 15px;
   display: flex;
   justify-content: space-between;
@@ -45,8 +43,6 @@ html, body {
   background: rgba(4, 5, 20, 0.38);
   z-index: 10;
 }
-
-/* Stats */
 .brand, .stat span, .eyebrow, label, .danger-line {
   font-family: "Press Start 2P", monospace;
 }
@@ -84,18 +80,16 @@ html, body {
   text-shadow: 0 0 8px rgba(255, 79, 216, 0.75);
 }
 
-/* Zone de jeu - au centre */
-.game-area {
+/* Zone de jeu */
+#game-area {
   position: absolute;
   left: 0;
   right: 0;
   top: 50px;
-  bottom: 50px;
+  bottom: 60px;
   overflow: hidden;
   padding: 0 10px;
 }
-
-/* Mission copy */
 .mission-copy {
   position: absolute;
   left: 50%;
@@ -143,12 +137,8 @@ html, body {
   box-shadow: 0 0 8px var(--red);
   transform: rotate(45deg);
 }
-.danger-line::before {
-  left: 0;
-}
-.danger-line::after {
-  right: 0;
-}
+.danger-line::before { left: 0; }
+.danger-line::after { right: 0; }
 .danger-line span {
   position: relative;
   top: 3px;
@@ -171,7 +161,6 @@ html, body {
   font: clamp(12px, 3vw, 18px) "Press Start 2P", monospace;
   text-shadow: 0 0 5px #fff;
   z-index: 2;
-  transition: opacity 0.15s, transform 0.15s;
 }
 .operation.bonus {
   border-color: var(--yellow);
@@ -191,20 +180,18 @@ html, body {
   transform: scale(1.55) rotate(12deg);
 }
 
-/* Panneau de contrôle - en bas */
+/* Panneau de contrôle - Fixé en bas */
 .control-panel {
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  height: auto;
-  min-height: 50px;
+  height: 60px;
   padding: 8px 15px;
   background: linear-gradient(to bottom, rgba(8, 10, 33, 0.72), #060719);
   border-top: 1px solid rgba(89, 245, 255, 0.17);
   z-index: 10;
 }
-
 .control-panel label {
   display: block;
   font-size: 7px;
@@ -255,20 +242,11 @@ html, body {
   border-radius: 6px;
   padding: 8px 14px;
   font: 8px "Press Start 2P";
-  transition: transform 0.15s, box-shadow 0.15s;
   margin-left: 5px;
 }
-.enter-button:hover {
-  transform: translateY(-2px) scale(1.05);
-  box-shadow: 0 0 12px rgba(255, 243, 92, 0.8);
-}
-.enter-button:active {
-  transform: translateY(0) scale(0.98);
-}
-.enter-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
+.enter-button:hover { transform: translateY(-2px) scale(1.05); box-shadow: 0 0 12px rgba(255, 243, 92, 0.8); }
+.enter-button:active { transform: translateY(0) scale(0.98); }
+.enter-button:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .status-message {
   height: 12px;
@@ -277,12 +255,8 @@ html, body {
   color: #aeb5e2;
   font-size: 10px;
 }
-.status-message.good {
-  color: var(--yellow);
-}
-.status-message.miss {
-  color: var(--red);
-}
+.status-message.good { color: var(--yellow); }
+.status-message.miss { color: var(--red); }
 
 /* Overlays */
 .overlay {
@@ -293,12 +267,10 @@ html, body {
   place-items: center;
   background: rgba(3, 4, 18, 0.8);
   backdrop-filter: blur(3px);
-  transition: opacity 0.25s;
 }
 .start-screen {
   text-align: center;
   padding: 40px 15px 20px;
-  z-index: 31;
 }
 .title-planet {
   display: grid;
@@ -340,25 +312,15 @@ html, body {
   background: var(--yellow);
   box-shadow: 0 0 15px rgba(255, 243, 92, 0.6);
   font: 11px "Press Start 2P";
-  transition: transform 0.15s, box-shadow 0.15s;
-  z-index: 1;
 }
-.primary-button:hover {
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 0 25px rgba(255, 243, 92, 0.8);
-}
-.primary-button span {
-  margin-left: 8px;
-}
+.primary-button:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 0 25px rgba(255, 243, 92, 0.8); }
+.primary-button span { margin-left: 8px; }
 .tip {
   margin-top: 15px;
   color: #9ba3d2;
   font-size: 10px;
 }
-.modal.hidden {
-  opacity: 0;
-  pointer-events: none;
-}
+.modal.hidden { opacity: 0; pointer-events: none; }
 .modal-card {
   width: min(95%, 350px);
   padding: 25px 20px;
@@ -370,43 +332,13 @@ html, body {
   max-height: 90vh;
   overflow: auto;
 }
-.gameover-icon {
-  font-size: 35px;
-  color: var(--red);
-  filter: drop-shadow(0 0 8px var(--red));
-}
-.modal-card h2 {
-  margin: 12px 0 6px;
-  font: 22px "Press Start 2P";
-  color: var(--yellow);
-}
-.modal-card > p:not(.eyebrow) {
-  color: #c4c9ef;
-  font-size: 14px;
-}
-.result-grid {
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  margin: 15px 0;
-}
-.result-grid div {
-  min-width: 70px;
-  padding: 8px;
-  border-radius: 7px;
-  background: #1b1f4a;
-}
-.result-grid span {
-  display: block;
-  font: 7px "Press Start 2P";
-  color: #a7acd5;
-}
-.result-grid strong {
-  display: block;
-  margin-top: 8px;
-  font: 16px "Press Start 2P";
-  color: var(--cyan);
-}
+.gameover-icon { font-size: 35px; color: var(--red); filter: drop-shadow(0 0 8px var(--red)); }
+.modal-card h2 { margin: 12px 0 6px; font: 22px "Press Start 2P"; color: var(--yellow); }
+.modal-card > p:not(.eyebrow) { color: #c4c9ef; font-size: 14px; }
+.result-grid { display: flex; justify-content: center; gap: 15px; margin: 15px 0; }
+.result-grid div { min-width: 70px; padding: 8px; border-radius: 7px; background: #1b1f4a; }
+.result-grid span { display: block; font: 7px "Press Start 2P"; color: #a7acd5; }
+.result-grid strong { display: block; margin-top: 8px; font: 16px "Press Start 2P"; color: var(--cyan); }
 .freeze-overlay {
   position: fixed;
   inset: 0;
@@ -416,10 +348,7 @@ html, body {
   background: rgba(93, 236, 255, 0.2);
   box-shadow: inset 0 0 50px rgba(89, 245, 255, 0.5);
 }
-.freeze-overlay.active {
-  display: grid;
-  animation: frost 0.8s ease-in-out infinite alternate;
-}
+.freeze-overlay.active { display: grid; animation: frost 0.8s ease-in-out infinite alternate; }
 .freeze-content {
   display: grid;
   place-items: center;
@@ -427,85 +356,4 @@ html, body {
   border: 2px solid var(--cyan);
   border-radius: 15px;
   background: rgba(7, 16, 48, 0.9);
-  box-shadow: 0 0 20px var(--cyan);
-}
-.freeze-content span {
-  font-size: 25px;
-}
-.freeze-content strong {
-  margin: 5px 0;
-  font: 20px "Press Start 2P";
-  color: var(--cyan);
-  text-shadow: 0 0 8px var(--cyan);
-}
-.freeze-content b {
-  font: 28px "Press Start 2P";
-  color: #fff;
-}
-.freeze-content small {
-  margin-top: 6px;
-  font: 7px "Press Start 2P";
-  color: #bdeeff;
-}
-.pop-text {
-  position: absolute;
-  z-index: 10;
-  color: var(--yellow);
-  font: 12px "Press Start 2P";
-  text-shadow: 0 0 6px var(--yellow);
-  animation: popText 0.8s forwards;
-  pointer-events: none;
-}
-.spark {
-  position: absolute;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--cyan);
-  box-shadow: 0 0 8px currentColor;
-  animation: spark 0.55s ease-out forwards;
-}
-
-/* Animations */
-@keyframes drift {
-  to { transform: translateY(50px); }
-}
-@keyframes float {
-  50% { transform: translateY(-10px) rotate(5deg); }
-}
-@keyframes bonusPulse {
-  to { transform: scale(1.06); filter: brightness(1.35); }
-}
-@keyframes frost {
-  to { background: rgba(93, 236, 255, 0.3); }
-}
-@keyframes popText {
-  to { transform: translateY(-40px) scale(1.2); opacity: 0; }
-}
-@keyframes spark {
-  to { transform: translate(var(--x), var(--y)) scale(0); opacity: 0; }
-}
-
-/* Fix spécifique pour Firefox Android */
-@-moz-document url-prefix() {
-  html, body {
-    height: 100vh !important;
-    overflow: hidden !important;
-  }
-  .game-layout {
-    height: 100vh !important;
-  }
-  .hud {
-    position: absolute !important;
-    top: 0 !important;
-  }
-  .game-area {
-    position: absolute !important;
-    top: 50px !important;
-    bottom: 50px !important;
-  }
-  .control-panel {
-    position: absolute !important;
-    bottom: 0 !important;
-  }
-}
+  box-shadow: 0 0
