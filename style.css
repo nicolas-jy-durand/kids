@@ -9,24 +9,31 @@
 * {
   box-sizing: border-box;
 }
-body {
+html, body {
   margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  font-family: "Space Grotesk", sans-serif;
   color: #fff;
   background: #030514;
-  font-family: "Space Grotesk", sans-serif;
-  overflow: hidden;
 }
+
 .game-shell {
-  position: relative;
-  isolation: isolate;
-  min-height: 100vh;
-  max-width: 1200px;
-  margin: auto;
-  overflow: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  max-width: none;
+  min-height: 100%;
   background: radial-gradient(circle at 50% 35%, #1c2461 0%, #090c2d 33%, #040515 73%);
+  overflow: hidden;
 }
+
 .stars, .stars::before, .stars::after {
   position: absolute;
   inset: 0;
@@ -71,33 +78,36 @@ body {
   right: -35%;
   bottom: -10%;
 }
+
+/* HUD - plus compact sur mobile */
 .hud {
-  height: 110px;
-  padding: 23px clamp(20px, 5vw, 70px);
+  height: auto;
+  min-height: 60px;
+  padding: 12px 20px;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   border-bottom: 1px solid rgba(89, 245, 255, 0.16);
   background: rgba(4, 5, 20, 0.38);
+  z-index: 10;
 }
-.brand, .stat span, .eyebrow, label, kbd, .danger-line {
+.brand, .stat span, .eyebrow, label, .danger-line {
   font-family: "Press Start 2P", monospace;
 }
 .brand {
-  font-size: 12px;
-  line-height: 1.55;
-  letter-spacing: 0.3px;
+  font-size: 10px;
+  line-height: 1.4;
   color: var(--cyan);
   text-shadow: 0 0 12px var(--cyan);
 }
 .brand-mark {
   color: var(--yellow);
-  font-size: 20px;
+  font-size: 16px;
   vertical-align: middle;
 }
 .hud-stats {
   display: flex;
-  gap: clamp(12px, 4vw, 46px);
+  gap: 15px;
 }
 .stat {
   text-align: right;
@@ -105,65 +115,69 @@ body {
 .stat span {
   display: block;
   color: #a1a7d8;
-  font-size: 8px;
-  margin-bottom: 5px;
+  font-size: 6px;
+  margin-bottom: 3px;
 }
 .stat strong {
-  font: 20px "Press Start 2P", monospace;
+  font: 16px "Press Start 2P", monospace;
   color: var(--yellow);
-  text-shadow: 0 0 13px rgba(255, 243, 92, 0.75);
+  text-shadow: 0 0 10px rgba(255, 243, 92, 0.75);
 }
 .level-stat strong {
   color: var(--magenta);
-  text-shadow: 0 0 13px rgba(255, 79, 216, 0.75);
+  text-shadow: 0 0 10px rgba(255, 79, 216, 0.75);
 }
+
+/* Zone de jeu - prend tout l'espace disponible */
 .game-area {
   position: relative;
-  height: calc(100vh - 255px);
-  min-height: 370px;
+  height: 100%;
+  min-height: 0;
   overflow: hidden;
+  padding: 0 10px;
 }
 .mission-copy {
   position: absolute;
   left: 50%;
-  top: 20px;
+  top: 10px;
   transform: translateX(-50%);
   text-align: center;
   width: 100%;
   pointer-events: none;
+  z-index: 2;
 }
 .eyebrow {
-  font-size: 9px;
+  font-size: 7px;
   color: var(--cyan);
-  letter-spacing: 1.5px;
-  text-shadow: 0 0 10px var(--cyan);
+  letter-spacing: 1px;
+  text-shadow: 0 0 8px var(--cyan);
 }
 .mission-copy p {
-  margin: 9px 0;
+  margin: 6px 0;
   color: #bbc1e7;
-  font-size: 14px;
+  font-size: 11px;
 }
 .danger-line {
   position: absolute;
-  height: 25px;
-  bottom: 10px;
+  height: 20px;
+  bottom: 5px;
   left: 5%;
   right: 5%;
   border-top: 2px solid var(--red);
   color: var(--red);
-  text-shadow: 0 0 12px var(--red);
-  font-size: 8px;
+  text-shadow: 0 0 10px var(--red);
+  font-size: 7px;
   text-align: center;
   z-index: 3;
 }
 .danger-line::before, .danger-line::after {
   content: "";
   position: absolute;
-  top: -7px;
-  height: 11px;
-  width: 11px;
+  top: -5px;
+  height: 8px;
+  width: 8px;
   background: var(--red);
-  box-shadow: 0 0 14px var(--red);
+  box-shadow: 0 0 10px var(--red);
   transform: rotate(45deg);
 }
 .danger-line::before {
@@ -174,112 +188,112 @@ body {
 }
 .danger-line span {
   position: relative;
-  top: 6px;
+  top: 4px;
   background: var(--ink);
-  padding: 0 13px;
+  padding: 0 10px;
 }
+
+/* Opérations */
 .operation {
   position: absolute;
   display: grid;
   place-items: center;
-  width: clamp(94px, 13vw, 142px);
-  height: clamp(54px, 7vw, 70px);
+  width: clamp(70px, 18vw, 110px);
+  height: clamp(36px, 8vw, 55px);
   border: 2px solid var(--cyan);
-  border-radius: 13px;
+  border-radius: 8px;
   color: #fff;
   background: linear-gradient(135deg, rgba(22, 33, 81, 0.96), rgba(12, 15, 47, 0.9));
   box-shadow: 0 0 9px var(--cyan), inset 0 0 14px rgba(89, 245, 255, 0.2);
-  font: clamp(15px, 2.3vw, 24px) "Press Start 2P", monospace;
-  text-shadow: 0 0 7px #fff;
+  font: clamp(12px, 3vw, 18px) "Press Start 2P", monospace;
+  text-shadow: 0 0 5px #fff;
   z-index: 2;
   transition: opacity 0.15s, transform 0.15s;
 }
 .operation.bonus {
   border-color: var(--yellow);
   color: var(--yellow);
-  width: clamp(145px, 19vw, 205px);
-  box-shadow: 0 0 8px var(--yellow), 0 0 25px var(--magenta), inset 0 0 18px rgba(255, 79, 216, 0.45);
+  width: clamp(100px, 22vw, 160px);
+  box-shadow: 0 0 8px var(--yellow), 0 0 20px var(--magenta), inset 0 0 15px rgba(255, 79, 216, 0.4);
   animation: bonusPulse 0.8s ease-in-out infinite alternate;
 }
 .operation.bonus small {
   display: block;
-  font: 7px "Press Start 2P";
+  font: 6px "Press Start 2P";
   color: var(--magenta);
-  margin-bottom: 5px;
+  margin-bottom: 3px;
 }
 .operation.exploding {
   opacity: 0;
   transform: scale(1.55) rotate(12deg);
 }
+
+/* Panneau de contrôle */
 .control-panel {
-  height: 145px;
-  padding: 17px max(20px, 10vw) 12px;
+  height: auto;
+  min-height: 50px;
+  padding: 8px 15px;
   position: relative;
   background: linear-gradient(to bottom, rgba(8, 10, 33, 0.72), #060719);
   border-top: 1px solid rgba(89, 245, 255, 0.17);
-  z-index: 5;
+  z-index: 10;
 }
 .control-panel label {
   display: block;
-  font-size: 8px;
+  font-size: 7px;
   color: #a1a7d8;
-  margin: 0 0 8px 15px;
+  margin: 0 0 6px 12px;
 }
 .answer-row {
-  max-width: 560px;
-  height: 52px;
+  max-width: 100%;
+  height: 40px;
   margin: auto;
   display: flex;
   align-items: center;
-  padding: 0 13px;
+  padding: 0 8px;
   border: 2px solid var(--cyan);
-  border-radius: 11px;
+  border-radius: 8px;
   background: rgba(12, 16, 47, 0.92);
-  box-shadow: 0 0 13px rgba(89, 245, 255, 0.3), inset 0 0 17px rgba(89, 245, 255, 0.08);
+  box-shadow: 0 0 10px rgba(89, 245, 255, 0.3), inset 0 0 12px rgba(89, 245, 255, 0.08);
 }
 .answer-row:focus-within {
-  box-shadow: 0 0 22px rgba(89, 245, 255, 0.8), inset 0 0 17px rgba(89, 245, 255, 0.12);
+  box-shadow: 0 0 18px rgba(89, 245, 255, 0.8), inset 0 0 12px rgba(89, 245, 255, 0.12);
 }
 .prompt {
   color: var(--magenta);
-  font: 20px "Press Start 2P";
+  font: 16px "Press Start 2P";
 }
 .answer-row input {
   width: 100%;
   min-width: 0;
-  padding: 0 12px;
+  padding: 0 10px;
   color: #fff;
   background: transparent;
   border: 0;
   outline: 0;
-  font: 17px "Press Start 2P";
+  font: 16px "Press Start 2P";
+  text-align: center;
 }
 .answer-row input::placeholder {
   color: #6e76a9;
-  font: 10px "Space Grotesk";
-}
-kbd {
-  color: #0c1334;
-  background: var(--yellow);
-  border-radius: 4px;
-  padding: 7px;
-  font-size: 7px;
-  white-space: nowrap;
+  font: 9px "Space Grotesk";
 }
 
+/* Bouton ENTRÉE */
 .enter-button {
   cursor: pointer;
   color: #0c1334;
   background: var(--yellow);
   border: none;
-  border-radius: 4px;
-  padding: 7px 11px;
-  font: 7px "Press Start 2P";
+  border-radius: 6px;
+  padding: 8px 14px;
+  font: 8px "Press Start 2P";
   transition: transform 0.15s, box-shadow 0.15s;
+  margin-left: 5px;
 }
 .enter-button:hover {
   transform: translateY(-2px) scale(1.05);
-  box-shadow: 0 0 15px rgba(255, 243, 92, 0.8);
+  box-shadow: 0 0 12px rgba(255, 243, 92, 0.8);
 }
 .enter-button:active {
   transform: translateY(0) scale(0.98);
@@ -290,11 +304,11 @@ kbd {
 }
 
 .status-message {
-  height: 14px;
-  margin: 8px auto 0;
+  height: 12px;
+  margin: 6px auto 0;
   text-align: center;
   color: #aeb5e2;
-  font-size: 12px;
+  font-size: 10px;
 }
 .status-message.good {
   color: var(--yellow);
@@ -302,130 +316,138 @@ kbd {
 .status-message.miss {
   color: var(--red);
 }
+
+/* Overlays */
 .overlay {
-  position: absolute;
+  position: fixed;
   inset: 0;
-  z-index: 10;
+  z-index: 20;
   display: grid;
   place-items: center;
-  background: rgba(3, 4, 18, 0.68);
+  background: rgba(3, 4, 18, 0.8);
   backdrop-filter: blur(3px);
   transition: opacity 0.25s;
 }
 .start-screen {
   text-align: center;
-  padding: 70px 20px 30px;
+  padding: 40px 15px 20px;
+  z-index: 21;
 }
 .title-planet {
   display: grid;
   place-items: center;
-  width: 85px;
-  height: 85px;
-  margin: 0 auto 20px;
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 15px;
   border: 3px solid var(--magenta);
   border-radius: 50%;
   color: var(--yellow);
-  font-size: 38px;
-  box-shadow: 0 0 25px var(--magenta), inset 0 0 20px rgba(255, 79, 216, 0.4);
+  font-size: 25px;
+  box-shadow: 0 0 20px var(--magenta), inset 0 0 15px rgba(255, 79, 216, 0.4);
   animation: float 3s ease-in-out infinite;
 }
 .start-screen h1 {
-  margin: 18px 0;
-  font: clamp(27px, 5vw, 54px)/1.35 "Press Start 2P";
+  margin: 15px 0;
+  font: 20px/1.3 "Press Start 2P";
   color: #fff;
-  text-shadow: 4px 4px 0 #61227f, 0 0 20px var(--magenta);
+  text-shadow: 3px 3px 0 #61227f, 0 0 15px var(--magenta);
 }
 .start-screen h1 em {
   color: var(--yellow);
   font-style: normal;
-  text-shadow: 4px 4px 0 #92583d, 0 0 20px var(--yellow);
+  text-shadow: 3px 3px 0 #92583d, 0 0 15px var(--yellow);
 }
 .intro {
   color: #d6d9f4;
-  font-size: 17px;
-  line-height: 1.45;
+  font-size: 13px;
+  line-height: 1.4;
+  margin-bottom: 15px;
 }
 .primary-button {
   cursor: pointer;
-  margin-top: 18px;
-  padding: 17px 25px;
+  margin-top: 15px;
+  padding: 14px 20px;
   border: 2px solid var(--yellow);
   border-radius: 8px;
   color: #11132d;
   background: var(--yellow);
-  box-shadow: 0 0 20px rgba(255, 243, 92, 0.6);
-  font: 13px "Press Start 2P";
+  box-shadow: 0 0 15px rgba(255, 243, 92, 0.6);
+  font: 11px "Press Start 2P";
   transition: transform 0.15s, box-shadow 0.15s;
+  z-index: 1;
 }
 .primary-button:hover {
-  transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 0 32px rgba(255, 243, 92, 0.9);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 0 25px rgba(255, 243, 92, 0.8);
 }
 .primary-button span {
   margin-left: 8px;
 }
 .tip {
-  margin-top: 24px;
+  margin-top: 15px;
   color: #9ba3d2;
-  font-size: 12px;
+  font-size: 10px;
 }
 .modal.hidden {
   opacity: 0;
   pointer-events: none;
 }
 .modal-card {
-  width: min(90%, 420px);
-  padding: 34px 25px;
+  width: min(95%, 350px);
+  padding: 25px 20px;
   text-align: center;
   border: 2px solid var(--magenta);
-  border-radius: 18px;
+  border-radius: 15px;
   background: #111333;
-  box-shadow: 0 0 35px rgba(255, 79, 216, 0.4);
+  box-shadow: 0 0 25px rgba(255, 79, 216, 0.4);
+  max-height: 90vh;
+  overflow: auto;
 }
 .gameover-icon {
-  font-size: 42px;
+  font-size: 35px;
   color: var(--red);
-  filter: drop-shadow(0 0 10px var(--red));
+  filter: drop-shadow(0 0 8px var(--red));
 }
 .modal-card h2 {
-  margin: 16px 0 8px;
-  font: 28px "Press Start 2P";
+  margin: 12px 0 6px;
+  font: 22px "Press Start 2P";
   color: var(--yellow);
 }
 .modal-card > p:not(.eyebrow) {
   color: #c4c9ef;
+  font-size: 14px;
 }
 .result-grid {
   display: flex;
   justify-content: center;
-  gap: 35px;
-  margin: 25px 0 3px;
+  gap: 15px;
+  margin: 15px 0;
 }
 .result-grid div {
-  min-width: 105px;
-  padding: 12px;
-  border-radius: 9px;
+  min-width: 70px;
+  padding: 8px;
+  border-radius: 7px;
   background: #1b1f4a;
 }
 .result-grid span {
   display: block;
-  font: 8px "Press Start 2P";
+  font: 7px "Press Start 2P";
   color: #a7acd5;
 }
 .result-grid strong {
   display: block;
-  margin-top: 10px;
-  font: 20px "Press Start 2P";
+  margin-top: 8px;
+  font: 16px "Press Start 2P";
   color: var(--cyan);
 }
 .freeze-overlay {
-  position: absolute;
+  position: fixed;
   inset: 0;
-  z-index: 4;
+  z-index: 15;
   display: none;
   place-items: center;
-  background: rgba(93, 236, 255, 0.13);
-  box-shadow: inset 0 0 70px rgba(89, 245, 255, 0.55);
+  background: rgba(93, 236, 255, 0.2);
+  box-shadow: inset 0 0 50px rgba(89, 245, 255, 0.5);
 }
 .freeze-overlay.active {
   display: grid;
@@ -434,280 +456,80 @@ kbd {
 .freeze-content {
   display: grid;
   place-items: center;
-  padding: 22px 35px;
+  padding: 18px 25px;
   border: 2px solid var(--cyan);
-  border-radius: 18px;
-  background: rgba(7, 16, 48, 0.85);
-  box-shadow: 0 0 30px var(--cyan);
+  border-radius: 15px;
+  background: rgba(7, 16, 48, 0.9);
+  box-shadow: 0 0 20px var(--cyan);
 }
 .freeze-content span {
-  font-size: 30px;
+  font-size: 25px;
 }
 .freeze-content strong {
-  margin: 7px 0;
-  font: 23px "Press Start 2P";
+  margin: 5px 0;
+  font: 20px "Press Start 2P";
   color: var(--cyan);
-  text-shadow: 0 0 10px var(--cyan);
+  text-shadow: 0 0 8px var(--cyan);
 }
 .freeze-content b {
-  font: 35px "Press Start 2P";
+  font: 28px "Press Start 2P";
   color: #fff;
 }
 .freeze-content small {
-  margin-top: 8px;
-  font: 8px "Press Start 2P";
+  margin-top: 6px;
+  font: 7px "Press Start 2P";
   color: #bdeeff;
 }
 .pop-text {
   position: absolute;
-  z-index: 6;
+  z-index: 10;
   color: var(--yellow);
-  font: 13px "Press Start 2P";
-  text-shadow: 0 0 8px var(--yellow);
+  font: 12px "Press Start 2P";
+  text-shadow: 0 0 6px var(--yellow);
   animation: popText 0.8s forwards;
   pointer-events: none;
 }
 .spark {
   position: absolute;
-  width: 7px;
-  height: 7px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   background: var(--cyan);
-  box-shadow: 0 0 10px currentColor;
+  box-shadow: 0 0 8px currentColor;
   animation: spark 0.55s ease-out forwards;
 }
+
+/* Animations */
 @keyframes drift {
-  to {
-    transform: translateY(50px);
-  }
+  to { transform: translateY(50px); }
 }
 @keyframes float {
-  50% {
-    transform: translateY(-12px) rotate(5deg);
-  }
+  50% { transform: translateY(-10px) rotate(5deg); }
 }
 @keyframes bonusPulse {
-  to {
-    transform: scale(1.06);
-    filter: brightness(1.35);
-  }
+  to { transform: scale(1.06); filter: brightness(1.35); }
 }
 @keyframes frost {
-  to {
-    background: rgba(93, 236, 255, 0.24);
-  }
+  to { background: rgba(93, 236, 255, 0.3); }
 }
 @keyframes popText {
-  to {
-    transform: translateY(-55px) scale(1.25);
-    opacity: 0;
-  }
+  to { transform: translateY(-40px) scale(1.2); opacity: 0; }
 }
 @keyframes spark {
-  to {
-    transform: translate(var(--x), var(--y)) scale(0);
-    opacity: 0;
-  }
+  to { transform: translate(var(--x), var(--y)) scale(0); opacity: 0; }
 }
 
-/* Mobile - Adaptation complète pour le clavier virtuel */
-@media (max-width: 768px) {
-  body {
-    min-height: 100vh;
-    height: 100vh;
-    overflow: hidden;
-    position: fixed;
-    width: 100%;
-  }
-
+/* Fix spécifique pour Firefox Android */
+@-moz-document url-prefix() {
   .game-shell {
-    display: grid;
-    grid-template-rows: auto 1fr auto;
-    height: 100vh;
-    height: 100dvh;
-    max-height: 100vh;
-    max-height: 100dvh;
-    max-width: 100%;
-    margin: 0;
-    padding-bottom: 0 !important;
+    height: 100vh !important;
+    min-height: 100vh !important;
   }
-
-  .hud {
-    height: auto;
-    min-height: 60px;
-    padding: 10px 15px;
-    border-bottom-width: 1px;
+  body, html {
+    height: 100vh !important;
+    overflow: hidden !important;
   }
-  .brand {
-    font-size: 8px;
-    line-height: 1.4;
-  }
-  .brand-mark {
-    font-size: 14px;
-  }
-  .stat span {
-    font-size: 6px;
-  }
-  .stat strong {
-    font-size: 14px;
-  }
-
-  .game-area {
-    height: 100%;
-    min-height: 0;
-    padding: 0 10px;
-    overflow: hidden;
-  }
-
-  .mission-copy {
-    top: 8px;
-  }
-  .mission-copy .eyebrow {
-    font-size: 6px;
-  }
-  .mission-copy p {
-    font-size: 10px;
-    margin: 5px 0;
-  }
-
-  .control-panel {
-    height: auto;
-    min-height: 50px;
-    padding: 8px 15px;
-    border-top-width: 1px;
-  }
-
-  .answer-row {
-    height: 40px;
-    max-width: 100%;
-    padding: 0 8px;
-    border-width: 1px;
-  }
-  .prompt {
-    font-size: 14px;
-  }
-  .answer-row input {
-    font-size: 16px;
-  }
-  .answer-row input::placeholder {
-    font-size: 8px;
-  }
-
-  .enter-button {
-    padding: 6px 12px;
-    font-size: 8px;
-    border-radius: 6px;
-  }
-
-  .danger-line {
-    height: 18px;
-    bottom: 5px;
-    font-size: 6px;
-  }
-  .danger-line::before,
-  .danger-line::after {
-    height: 6px;
-    width: 6px;
-    top: -4px;
-  }
-
-  .operation {
-    width: clamp(70px, 18vw, 110px);
-    height: clamp(36px, 8vw, 55px);
-    font-size: clamp(12px, 3vw, 18px);
-    border-radius: 8px;
-  }
-  .operation.bonus {
-    width: clamp(100px, 22vw, 160px);
-  }
-
-  .start-screen {
-    padding: 30px 15px 15px;
-  }
-  .start-screen h1 {
-    font-size: 20px;
-  }
-  .title-planet {
-    width: 60px;
-    height: 60px;
-    font-size: 25px;
-  }
-  .intro {
-    font-size: 13px;
-  }
-  .primary-button {
-    padding: 12px 18px;
-    font-size: 10px;
-  }
-
-  .modal-card {
-    width: min(95%, 350px);
-    padding: 20px;
-  }
-  .modal-card h2 {
-    font-size: 22px;
-  }
-  .result-grid {
-    gap: 15px;
-    margin: 15px 0;
-  }
-  .result-grid div {
-    min-width: 70px;
-    padding: 8px;
-  }
-  .result-grid strong {
-    font-size: 15px;
-  }
-  .score-entry input {
-    font-size: 9px;
-  }
-  .leaderboard li {
-    font-size: 7px;
-    padding: 3px 0;
-  }
-}
-
-/* Très petits écrans */
-@media (max-width: 375px) {
-  .game-shell {
-    grid-template-rows: auto 1fr auto;
-  }
-
-  .hud {
-    min-height: 50px;
-    padding: 8px 12px;
-  }
-  .brand {
-    font-size: 7px;
-  }
-  .stat strong {
-    font-size: 12px;
-  }
-
-  .control-panel {
-    min-height: 45px;
-    padding: 6px 12px;
-  }
-  .answer-row {
-    height: 36px;
-    padding: 0 6px;
-  }
-  .enter-button {
-    padding: 5px 10px;
-    font-size: 7px;
-  }
-
-  .operation {
-    width: clamp(60px, 20vw, 90px);
-    height: clamp(32px, 10vw, 45px);
-    font-size: clamp(11px, 3.5vw, 16px);
-  }
-
-  .danger-line {
-    bottom: 4px;
-    font-size: 5px;
-  }
-  .danger-line span {
-    padding: 0 6px;
+  #game-area {
+    height: calc(100vh - 120px) !important;
   }
 }
